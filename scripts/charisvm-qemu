@@ -1,0 +1,84 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    cat <<'USAGE'
+Usage: charisvm-qemu [--iso FILE] [--disk FILE] [--memory MiB] [--cpus COUNT]
+
+Launch a real x86-64 guest using QEMU. KVM hardware acceleration is used when
+/dev/kvm is accessible; otherwise QEMU's software TCG accelerator is selected.
+
+Options:
+  --iso FILE       Bootable installer ISO (optional when an existing disk boots)
+  --disk FILE      qcow2 disk image (default: ~/.local/share/charisvm/guest.qcow2)
+  --memory MiB     Guest RAM in MiB (default: 2048)
+  --cpus COUNT     Guest vCPU count (default: 2)
+  -h, --help       Show this help
+USAGE
+}
+
+iso=""
+disk="${HOME}/.local/share/charisvm/guest.qcow2"
+memory=2048
+cpus=2
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --iso)
+            [ "$#" -ge 2 ] || { echo "charisvm-qemu: --iso requires a path" >&2; exit 2; }
+            iso=$2; shift 2 ;;
+        --disk)
+            [ "$#" -ge 2 ] || { echo "charisvm-qemu: --disk requires a path" >&2; exit 2; }
+            disk=$2; shift 2 ;;
+        --memory)
+            [ "$#" -ge 2 ] || { echo "charisvm-qemu: --memory requires MiB" >&2; exit 2; }
+            memory=$2; shift 2 ;;
+        --cpus)
+            [ "$#" -ge 2 ] || { echo "charisvm-qemu: --cpus requires a count" >&2; exit 2; }
+            cpus=$2; shift 2 ;;
+        -h|--help) usage; exit 0 ;;
+        *) echo "charisvm-qemu: unknown option: $1" >&2; usage >&2; exit 2 ;;
+    esac
+done
+
+case "$memory" in ''|*[!0-9]*) echo "charisvm-qemu: memory must be a positive integer" >&2; exit 2 ;; esac
+case "$cpus" in ''|*[!0-9]*) echo "charisvm-qemu: CPU count must be a positive integer" >&2; exit 2 ;; esac
+[ "$memory" -ge 256 ] || { echo "charisvm-qemu: memory must be at least 256 MiB" >&2; exit 2; }
+[ "$cpus" -ge 1 ] && [ "$cpus" -le 64 ] || { echo "charisvm-qemu: CPU count must be between 1 and 64" >&2; exit 2; }
+
+command -v qemu-system-x86_64 >/dev/null 2>&1 || {
+    echo "charisvm-qemu: qemu-system-x86_64 not found; install QEMU first" >&2
+    exit 127
+}
+command -v qemu-img >/dev/null 2>&1 || {
+    echo "charisvm-qemu: qemu-img not found; install QEMU image tools first" >&2
+    exit 127
+}
+
+if [ -n "$iso" ] && [ ! -r "$iso" ]; then
+    echo "charisvm-qemu: ISO is not readable: $iso" >&2
+    exit 2
+fi
+if [ ! -e "$disk" ] && [ -z "$iso" ]; then
+    echo "charisvm-qemu: a new VM needs --iso to install a guest OS" >&2
+    exit 2
+fi
+
+mkdir -p "$(dirname "$disk")"
+if [ ! -e "$disk" ]; then
+    qemu-img create -f qcow2 "$disk" 20G
+fi
+
+set -- -name charisvm -machine q35 -m "$memory" -smp "$cpus" \
+    -drive "file=$disk,format=qcow2,if=virtio" -boot menu=on
+if [ -n "$iso" ]; then
+    set -- "$@" -cdrom "$iso" -boot order=d,menu=on
+fi
+
+if [ -r /dev/kvm ] && [ -w /dev/kvm ]; then
+    echo "CharisVM: using KVM hardware acceleration."
+    exec qemu-system-x86_64 -accel kvm "$@"
+else
+    echo "CharisVM: /dev/kvm unavailable; using QEMU software emulation (slower)." >&2
+    exec qemu-system-x86_64 -accel tcg,thread=multi "$@"
+fi
