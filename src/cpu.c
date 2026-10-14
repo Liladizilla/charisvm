@@ -22,6 +22,7 @@ CpuStatus cpu_load_program(Cpu *cpu, const uint8_t *program, size_t length)
         memcpy(cpu->ram, program, length);
     }
     cpu->pc = 0u;
+    cpu->program_size = length;
     cpu->halted = false;
     cpu->output_written = false;
     return CPU_OK;
@@ -29,11 +30,11 @@ CpuStatus cpu_load_program(Cpu *cpu, const uint8_t *program, size_t length)
 
 static CpuStatus fetch_byte(Cpu *cpu, uint8_t *value)
 {
-    if ((size_t)cpu->pc >= CPU_RAM_SIZE) {
+    if ((size_t)cpu->pc >= cpu->program_size || (size_t)cpu->pc >= CPU_RAM_SIZE) {
         return CPU_ERR_PROGRAM_BOUNDS;
     }
     *value = cpu->ram[cpu->pc];
-    cpu->pc = (uint8_t)(cpu->pc + 1u);
+    cpu->pc = (uint16_t)(cpu->pc + 1u);
     return CPU_OK;
 }
 
