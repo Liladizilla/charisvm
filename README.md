@@ -33,7 +33,7 @@ sudo dnf install qemu-kvm qemu-img
 Get a bootable installer ISO for the guest operating system you want to install, then launch it:
 
 ```sh
-sh scripts/charisvm-qemu --iso ~/Downloads/installer.iso
+make vm VM_ARGS="--iso ~/Downloads/installer.iso"
 ```
 
 The launcher creates a 20 GiB QCOW2 virtual disk at `~/.local/share/charisvm/guest.qcow2` on first launch. Replace the example ISO path with the actual path on your machine. Install the guest OS onto that virtual disk inside the QEMU window.
@@ -41,14 +41,14 @@ The launcher creates a 20 GiB QCOW2 virtual disk at `~/.local/share/charisvm/gue
 After installation, launch the installed guest without the installer ISO:
 
 ```sh
-sh scripts/charisvm-qemu
+make vm
 ```
 
 Useful options:
 
 ```sh
-sh scripts/charisvm-qemu --iso ~/Downloads/installer.iso --memory 4096 --cpus 4
-sh scripts/charisvm-qemu --disk ~/VMs/dev.qcow2 --memory 2048 --cpus 2
+make vm VM_ARGS="--iso ~/Downloads/installer.iso --memory 4096 --cpus 4"
+make vm VM_ARGS="--disk ~/VMs/dev.qcow2 --memory 2048 --cpus 2"
 ```
 
 The default disk is persistent: the guest OS and its files remain on the disk between launches. Back up important guest data like you would any other computer.
