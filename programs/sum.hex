@@ -1,0 +1,11 @@
+# Calculate 7 + 5, write the result to OUT, and halt.
+# LDI R0, 7
+10 00 07
+# LDI R1, 5
+10 01 05
+# ADD R0, R1
+20 00 01
+# OUT R0
+F0 00
+# HLT
+00
