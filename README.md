@@ -16,6 +16,7 @@ make test
 make sanitize
 ./build/charisasm programs/sum.asm build/sum.hex
 ./build/charisvm build/sum.hex
+./build/charisvm-debug build/sum.hex
 ```
 
 The example program calculates 7 + 5. The emulator prints the final registers, program counter, zero flag, and output latch.
@@ -62,5 +63,5 @@ Changes should include tests. GitHub Actions builds the CLI, runs unit tests, an
 - [x] CI build/test/sanitizer baseline
 - [x] Hex program loader and CLI register/output display
 - [x] Assembler and sample programs
-- [ ] Instruction tracing and debugger
+- [x] Instruction tracing and register debugger
 - [ ] Memory inspection and more complete error reporting
