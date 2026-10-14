@@ -48,7 +48,7 @@ static int encode(char *line, uint8_t *out, size_t *n)
     char *comment = strchr(line, '#'); if (comment) *comment='\0';
     trim(line); if (!*line) { *n=0; return 1; }
     char *colon=strchr(line, ':');
-    if (colon) { *colon='\0'; trim(line); if (*line) { int a=find_label(line); if(a<0) return 0; } memmove(line,colon+1,strlen(colon+1)+1u); trim(line); if(!*line){*n=0;return 1;} }
+    if (colon) { *colon='\0'; trim(line); upper(line); if (*line) { int a=find_label(line); if(a<0) return 0; } memmove(line,colon+1,strlen(colon+1)+1u); trim(line); if(!*line){*n=0;return 1;} }
     char *args=strchr(line,' '); if(!args) args=strchr(line,'\t');
     if(args){*args++='\0';trim(args);} else args=(char *)"";
     upper(line);
