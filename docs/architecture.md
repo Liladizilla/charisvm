@@ -3,7 +3,7 @@
 ## Machine state
 - Four 8-bit general-purpose registers (R0–R3).
 - 256-byte flat RAM shared by instructions and data.
-- 8-bit program counter.
+- 8-bit branch addresses and a 16-bit program-counter representation, allowing the emulator to detect one-past-end fetches.
 - One zero flag, halt state, and one-byte output latch.
 
 ## Instruction encoding
@@ -24,7 +24,7 @@ Instructions are byte-oriented. The opcode byte is followed by operand bytes.
 
 ## Known limitations
 - The CLI does not yet load programs from files.
-- Flat RAM means fetch currently reads zero-filled memory beyond the loaded byte sequence. Strict loaded-program bounds and malformed-instruction detection are required before the core is stable.
+- The current loader tracks the loaded program length and rejects instruction/operand fetches beyond it. Code and data still share flat RAM, so STORE can modify instruction bytes within the loaded range.
 - Branch targets are absolute 8-bit addresses.
 - Arithmetic wraps modulo 256; carry and overflow flags are not modeled.
 - The output latch is not yet printed by the CLI.
