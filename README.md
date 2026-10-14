@@ -8,7 +8,7 @@ Early development. This initial commit establishes the build, CI, a minimal CPU 
 ## Initial architecture
 - Four 8-bit registers: R0–R3
 - 256 bytes of RAM
-- 8-bit program counter and zero flag
+- 8-bit address space with a 16-bit program-counter representation (to detect one-past-end fetches), plus a zero flag
 - Fetch/decode/execute loop
 - Bounded execution to prevent runaway programs
 
