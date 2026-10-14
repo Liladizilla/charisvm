@@ -79,6 +79,7 @@ if [ -r /dev/kvm ] && [ -w /dev/kvm ]; then
     echo "CharisVM: using KVM hardware acceleration."
     exec qemu-system-x86_64 -accel kvm "$@"
 else
+    set -- "$@" -boot menu=on
     echo "CharisVM: /dev/kvm unavailable; using QEMU software emulation (slower)." >&2
     exec qemu-system-x86_64 -accel tcg,thread=multi "$@"
 fi
