@@ -22,9 +22,9 @@ $(BUILD_DIR)/charisvm: $(CORE) src/main.c include/cpu.h | $(BUILD_DIR)
 test: $(TEST_BIN)
 	./$(TEST_BIN)
 
-sanitize: CFLAGS := -std=c11 -Wall -Wextra -Wpedantic -Werror -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer
-sanitize: LDFLAGS := -fsanitize=address,undefined
-sanitize: clean test
+sanitize:
+	$(MAKE) clean
+	$(MAKE) CFLAGS="-std=c11 -Wall -Wextra -Wpedantic -Werror -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer" LDFLAGS="-fsanitize=address,undefined" test
 
 clean:
 	rm -rf $(BUILD_DIR)
