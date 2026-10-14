@@ -11,7 +11,7 @@ SANITIZE_BIN := $(BUILD_DIR)/test_cpu_sanitize
 ASM_BIN := $(BUILD_DIR)/charisasm
 DEBUG_BIN := $(BUILD_DIR)/charisvm-debug
 
-.PHONY: all test test-assembler sanitize clean
+.PHONY: all test test-assembler sanitize vm clean
 
 all: $(BUILD_DIR)/charisvm $(ASM_BIN) $(DEBUG_BIN)
 
@@ -43,6 +43,9 @@ test-assembler: $(ASM_BIN) $(BUILD_DIR)/charisvm $(DEBUG_BIN)
 
 sanitize: $(SANITIZE_BIN)
 	./$(SANITIZE_BIN)
+
+vm:
+	sh scripts/charisvm-qemu $(VM_ARGS)
 
 clean:
 	rm -rf $(BUILD_DIR)
