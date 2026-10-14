@@ -14,12 +14,13 @@ An educational CPU emulator written from scratch in C. The first version impleme
 make
 make test
 make sanitize
-./build/charisvm programs/sum.hex
+./build/charisasm programs/sum.asm build/sum.hex
+./build/charisvm build/sum.hex
 ```
 
 The example program calculates 7 + 5. The emulator prints the final registers, program counter, zero flag, and output latch.
 
-## Hex program format
+## Assembly language\n\nThe `charisasm` tool accepts one instruction per line, comments beginning with `#`, and labels ending in a colon. Labels are case-insensitive. Example:\n\n```asm\nstart:\n    LDI R0, 7\n    LDI R1, 5\n    ADD R0, R1\n    OUT R0\n    HLT\n```\n\nThe assembler supports `HLT`, `LDI`, `MOV`, `ADD`, `SUB`, `LOAD`, `STORE`, `JMP`, `JZ`, and `OUT`. Numeric values may be decimal or prefixed with `0x`. Branches use absolute byte addresses.\n\n## Hex program format
 
 Programs are text files containing hexadecimal byte values separated by whitespace or commas. A `#` starts a comment. Prefix bytes with `0x` if desired.
 
@@ -60,6 +61,6 @@ Changes should include tests. GitHub Actions builds the CLI, runs unit tests, an
 - [x] CPU core and instruction semantics
 - [x] CI build/test/sanitizer baseline
 - [x] Hex program loader and CLI register/output display
-- [ ] Assembler and sample programs
+- [x] Assembler and sample programs
 - [ ] Instruction tracing and debugger
 - [ ] Memory inspection and more complete error reporting
