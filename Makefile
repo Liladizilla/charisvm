@@ -36,6 +36,7 @@ $(SANITIZE_BIN): $(CORE) tests/test_cpu.c include/cpu.h | $(BUILD_DIR)
 test: $(TEST_BIN) $(ASM_BIN) $(BUILD_DIR)/charisvm $(DEBUG_BIN)
 	./$(TEST_BIN)
 	sh tests/test_assembler.sh
+	sh tests/test_vm_launcher.sh
 
 test-assembler: $(ASM_BIN) $(BUILD_DIR)/charisvm $(DEBUG_BIN)
 	sh tests/test_assembler.sh
