@@ -22,7 +22,7 @@ static void test_load_add_output_and_halt(void)
 static void test_zero_flag_and_conditional_jump(void)
 {
     const uint8_t program[] = {
-        OP_LDI, 0u, 0u, OP_JZ, 7u, OP_LDI, 1u, 99u, OP_HLT
+        OP_LDI, 0u, 0u, OP_JZ, 8u, OP_LDI, 1u, 99u, OP_HLT
     };
     Cpu cpu;
     cpu_init(&cpu);
@@ -42,6 +42,15 @@ static void test_step_limit(void)
     assert(steps == 4u);
 }
 
+static void test_truncated_instruction(void)
+{
+    const uint8_t program[] = { OP_LDI, 0u };
+    Cpu cpu;
+    cpu_init(&cpu);
+    assert(cpu_load_program(&cpu, program, sizeof(program)) == CPU_OK);
+    assert(cpu_step(&cpu) == CPU_ERR_PROGRAM_BOUNDS);
+}
+
 static void test_invalid_opcode(void)
 {
     const uint8_t program[] = { 0xFFu };
@@ -57,6 +66,7 @@ int main(void)
     test_zero_flag_and_conditional_jump();
     test_step_limit();
     test_invalid_opcode();
+    test_truncated_instruction();
     puts("All CharisVM tests passed.");
     return 0;
 }
