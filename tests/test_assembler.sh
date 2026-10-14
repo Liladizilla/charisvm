@@ -3,6 +3,7 @@ set -eu
 
 ASM=./build/charisasm
 VM=./build/charisvm
+DEBUG=./build/charisvm-debug
 TMP=build/assembler-test
 mkdir -p "$TMP"
 trap 'rm -rf "$TMP"' EXIT HUP INT TERM
@@ -21,6 +22,9 @@ grep -q 'Assembled 12 byte(s)' "$TMP/assemble.out"
 "$VM" "$TMP/sum.hex" > "$TMP/run.out"
 grep -q 'R0 = 12 (0x0C)' "$TMP/run.out"
 grep -q 'OUT = 12 (0x0C)' "$TMP/run.out"
+"$DEBUG" "$TMP/sum.hex" > "$TMP/debug.out"
+grep -q 'R0=0C R1=05' "$TMP/debug.out"
+grep -q 'Debug session finished: 5 instruction(s).' "$TMP/debug.out"
 
 cat > "$TMP/jump.asm" <<'EOF'
     LDI R0, 0
