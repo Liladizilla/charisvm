@@ -57,7 +57,10 @@ static int encode(char *line, uint8_t *out, size_t *n)
     unsigned x=0,y=0;
     if(!strcmp(line,"HLT")){out[0]=OP_HLT;*n=1;return !*args;}
     if(!strcmp(line,"LDI")||!strcmp(line,"MOV")||!strcmp(line,"ADD")||!strcmp(line,"SUB")||!strcmp(line,"LOAD")||!strcmp(line,"STORE")){
-        if(!a||!b)return 0; upper(a); upper(b); int r=reg_id(a);
+        if (!a || !b) return 0;
+        upper(a);
+        upper(b);
+        int r = reg_id(a);
         if(r<0)return 0;
         if(!strcmp(line,"LDI")){if(!number_or_label(b,&y))return 0;out[0]=OP_LDI;out[1]=(uint8_t)r;out[2]=(uint8_t)y;}
         else if(!strcmp(line,"MOV")||!strcmp(line,"ADD")||!strcmp(line,"SUB")){int s=reg_id(b);if(s<0)return 0;out[0]=!strcmp(line,"MOV")?OP_MOV:!strcmp(line,"ADD")?OP_ADD:OP_SUB;out[1]=(uint8_t)r;out[2]=(uint8_t)s;}
