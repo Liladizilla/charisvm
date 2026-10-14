@@ -32,7 +32,8 @@ typedef enum {
 typedef struct {
     uint8_t registers[CPU_REGISTER_COUNT];
     uint8_t ram[CPU_RAM_SIZE];
-    uint8_t pc;
+    uint16_t pc;
+    size_t program_size;
     bool zero_flag;
     bool halted;
     uint8_t output;
