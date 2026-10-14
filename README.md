@@ -1,37 +1,65 @@
 # CharisVM
 
-CharisVM is an educational CPU emulator written from scratch in C. It starts with a small custom 8-bit architecture to make instruction execution, memory, and testing approachable.
+An educational CPU emulator written from scratch in C. The first version implements a small custom 8-bit machine to make instruction execution and memory behavior easy to inspect. It is **not** an x86 emulator.
 
-## Status
-Early development. This initial commit establishes the build, CI, a minimal CPU core, and automated tests. This is not an x86 emulator.
+## Requirements
 
-## Initial architecture
+- GCC or Clang
+- GNU Make
+- POSIX-like shell
+
+## Build, test, run
+
+```sh
+make
+make test
+make sanitize
+./build/charisvm programs/sum.hex
+```
+
+The example program calculates 7 + 5. The emulator prints the final registers, program counter, zero flag, and output latch.
+
+## Hex program format
+
+Programs are text files containing hexadecimal byte values separated by whitespace or commas. A `#` starts a comment. Prefix bytes with `0x` if desired.
+
+Example:
+
+```text
+10 00 07  # LDI R0, 7
+10 01 05  # LDI R1, 5
+20 00 01  # ADD R0, R1
+F0 00     # OUT R0
+00        # HLT
+```
+
+## Architecture
+
 - Four 8-bit registers: R0–R3
-- 256 bytes of RAM
-- 8-bit address space with a 16-bit program-counter representation (to detect one-past-end fetches), plus a zero flag
-- Fetch/decode/execute loop
-- Bounded execution to prevent runaway programs
+- 256 bytes of flat RAM
+- Program counter with one-past-end detection
+- Zero flag
+- Bounded execution (10,000 instructions in the CLI)
+- Strict compiler warnings and sanitizer CI
 
-## Build and test
-Requirements: GCC or Clang, GNU Make, and a POSIX-like shell.
+See [docs/architecture.md](docs/architecture.md) for opcodes and current limitations.
 
-    make
-    make test
-    make sanitize
+## Development
 
-## Development principles
-- Keep behavior deterministic and tests reproducible.
-- Treat malformed programs and invalid memory access as errors.
-- Use strict compiler warnings and sanitizers in CI.
-- Document limitations honestly.
+```sh
+make clean
+make
+make test
+make sanitize
+```
+
+Changes should include tests. GitHub Actions builds the CLI, runs unit tests, and runs AddressSanitizer/UndefinedBehaviorSanitizer checks.
 
 ## Roadmap
-1. [x] Repository, build, and CI baseline
-2. [ ] Define and test CPU state and instruction semantics
-3. [ ] Implement strict program loader and CLI runner
-4. [ ] Add assembler and sample programs
-5. [ ] Add debugger, tracing, and memory inspection
-6. [ ] Expand the architecture only after v0 is stable
 
-## License
-MIT. See LICENSE.
+- [x] CPU core and instruction semantics
+- [x] CI build/test/sanitizer baseline
+- [x] Hex program loader and CLI register/output display
+- [ ] Assembler and sample programs
+- [ ] Instruction tracing and debugger
+- [ ] Memory inspection and more complete error reporting
