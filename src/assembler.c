@@ -65,7 +65,7 @@ static int encode(char *line, uint8_t *out, size_t *n)
         *n=3;return 1;
     }
     if(!strcmp(line,"OUT")){if(!*args)return 0;upper(args);int r=reg_id(args);if(r<0)return 0;out[0]=OP_OUT;out[1]=(uint8_t)r;*n=2;return 1;}
-    if(!strcmp(line,"JMP")||!strcmp(line,"JZ")){if(!*args||!number_or_label(args,&x))return 0;out[0]=!strcmp(line,"JMP")?OP_JMP:OP_JZ;out[1]=(uint8_t)x;*n=2;return 1;}
+    if(!strcmp(line,"JMP")||!strcmp(line,"JZ")){upper(args);if(!*args||!number_or_label(args,&x))return 0;out[0]=!strcmp(line,"JMP")?OP_JMP:OP_JZ;out[1]=(uint8_t)x;*n=2;return 1;}
     return 0;
 }
 static int read_lines(const char *path, char lines[][LINE_SIZE], size_t *count)
