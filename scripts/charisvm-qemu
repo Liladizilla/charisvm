@@ -70,7 +70,7 @@ if [ ! -e "$disk" ]; then
 fi
 
 set -- -name charisvm -machine q35 -m "$memory" -smp "$cpus" \
-    -drive "file=$disk,format=qcow2,if=virtio" -boot menu=on
+    -drive "file=$disk,format=qcow2,if=virtio"
 if [ -n "$iso" ]; then
     set -- "$@" -cdrom "$iso" -boot order=d,menu=on
 fi
