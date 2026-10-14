@@ -25,7 +25,7 @@ grep -q 'OUT = 12 (0x0C)' "$TMP/run.out"
 "$DEBUG" "$TMP/sum.hex" > "$TMP/debug.out"
 grep -q 'R0=0C R1=05' "$TMP/debug.out"
 grep -q 'Debug session finished: 5 instruction(s).' "$TMP/debug.out"
-grep -q 'RAM[000..015]:' "$TMP/debug.out"
+grep -Fq 'RAM[000..015]:' "$TMP/debug.out"
 
 cat > "$TMP/jump.asm" <<'EOF'
     LDI R0, 0
