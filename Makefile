@@ -8,13 +8,17 @@ BUILD_DIR := build
 CORE := src/cpu.c
 TEST_BIN := $(BUILD_DIR)/test_cpu
 SANITIZE_BIN := $(BUILD_DIR)/test_cpu_sanitize
+ASM_BIN := $(BUILD_DIR)/charisasm
 
 .PHONY: all test sanitize clean
 
-all: $(BUILD_DIR)/charisvm
+all: $(BUILD_DIR)/charisvm $(ASM_BIN)
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
+
+$(ASM_BIN): src/assembler.c include/cpu.h | $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) src/assembler.c $(LDFLAGS) -o $@
 
 $(TEST_BIN): $(CORE) tests/test_cpu.c include/cpu.h | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(CORE) tests/test_cpu.c $(LDFLAGS) -o $@
