@@ -14,7 +14,7 @@ static const char *status_name(CpuStatus status)
     return "unknown";
 }
 
-static void dump(const Cpu *cpu, size_t step, const char *event)
+static void dump(const Cpu *cpu, size_t step, const char *event, int show_memory)
 {
     printf("[%03zu] %-8s PC=%03u  R0=%02X R1=%02X R2=%02X R3=%02X  Z=%u  OUT=",
            step, event, (unsigned)cpu->pc,
@@ -24,6 +24,14 @@ static void dump(const Cpu *cpu, size_t step, const char *event)
     if (cpu->output_written) printf("%02X", (unsigned)cpu->output);
     else printf("--");
     putchar('\n');
+    if (show_memory) {
+        printf("      RAM[000..015]:");
+        for (size_t i = 0u; i < 16u; i++) printf(" %02X", (unsigned)cpu->ram[i]);
+        putchar('\n');
+        printf("      RAM[240..255]:");
+        for (size_t i = CPU_RAM_SIZE - 16u; i < CPU_RAM_SIZE; i++) printf(" %02X", (unsigned)cpu->ram[i]);
+        putchar('\n');
+    }
 }
 
 int main(int argc, char **argv)
@@ -69,17 +77,17 @@ int main(int argc, char **argv)
         fprintf(stderr, "charisvm-debug: load: %s\n", status_name(status));
         return 1;
     }
-    dump(&cpu, 0u, "START");
+    dump(&cpu, 0u, "START", 1);
     while (!cpu.halted && steps < 10000u) {
         status = cpu_step(&cpu);
         if (status != CPU_OK) {
-            dump(&cpu, steps, "ERROR");
+            dump(&cpu, steps, "ERROR", 1);
             fprintf(stderr, "charisvm-debug: %s after %zu instruction(s)\n",
                     status_name(status), steps);
             return 1;
         }
         steps++;
-        dump(&cpu, steps, cpu.halted ? "HALT" : "STEP");
+        dump(&cpu, steps, cpu.halted ? "HALT" : "STEP", 0);
     }
     if (!cpu.halted) {
         fprintf(stderr, "charisvm-debug: step limit reached\n");
