@@ -60,6 +60,14 @@ static void test_invalid_opcode(void)
     assert(cpu_step(&cpu) == CPU_ERR_INVALID_OPCODE);
 }
 
+static void test_program_too_large(void)
+{
+    uint8_t program[CPU_RAM_SIZE + 1u] = { 0u };
+    Cpu cpu;
+    cpu_init(&cpu);
+    assert(cpu_load_program(&cpu, program, sizeof(program)) == CPU_ERR_PROGRAM_BOUNDS);
+}
+
 int main(void)
 {
     test_load_add_output_and_halt();
@@ -67,6 +75,7 @@ int main(void)
     test_step_limit();
     test_invalid_opcode();
     test_truncated_instruction();
+    test_program_too_large();
     puts("All CharisVM tests passed.");
     return 0;
 }
